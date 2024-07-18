@@ -144,30 +144,34 @@ async def async_setup_entry(
         battery_to_car_mode_description = E3DCBinarySensorEntityDescription(
             key="battery-to-car-mode",
             translation_key="battery-to-car-mode",
-            on_icon="mdi:battery",
-            off_icon="mdi:battery-off",
+            on_icon="mdi:battery-arrow-down",
+            off_icon="mdi:battery-remove",
             device_class=None,
             entity_registry_enabled_default=True,
+            entity_category=EntityCategory.DIAGNOSTIC,
         )
         entities.append(E3DCBinarySensor(coordinator, battery_to_car_mode_description, entry.unique_id))
 
         battery_before_car_mode_description = E3DCBinarySensorEntityDescription(
             key="battery-before-car-mode",
             translation_key="battery-before-car-mode",
-            on_icon="mdi:battery",
-            off_icon="mdi:car",
+            on_icon="mdi:battery-charging-high",
+            off_icon="mdi:car-electric",
             device_class=None,
             entity_registry_enabled_default=True,
+            entity_category=EntityCategory.DIAGNOSTIC,
         )
         entities.append(E3DCBinarySensor(coordinator, battery_before_car_mode_description, entry.unique_id))
 
         wallbox_enforce_power_assignment_description = E3DCBinarySensorEntityDescription(
             key="wallbox-enforce-power-assignment",
             translation_key="wallbox-enforce-power-assignment",
-            on_icon="mdi:battery-off",
-            off_icon="mdi:battery",
+            on_icon="mdi:battery-arrow-down",
+            off_icon="mdi:battery-remove",
             device_class=None,
             entity_registry_enabled_default=True,
+            entity_category=EntityCategory.DIAGNOSTIC,
+
         )
         entities.append(E3DCBinarySensor(coordinator, wallbox_enforce_power_assignment_description, entry.unique_id))
 

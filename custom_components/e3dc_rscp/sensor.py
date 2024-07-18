@@ -537,11 +537,12 @@ async def async_setup_entry(
         wb_discharge_bat_until_description = SensorEntityDescription(
             key="wb-discharge-bat-until",
             translation_key="wb-discharge-bat-until",
-            icon="mdi:battery-charging",
+            icon="mdi:battery-arrow-down",
             native_unit_of_measurement=PERCENTAGE,
             suggested_display_precision=0,
             device_class=SensorDeviceClass.BATTERY,
             state_class=SensorStateClass.MEASUREMENT,
+            entity_category=EntityCategory.DIAGNOSTIC,
         )
         entities.append(E3DCSensor(coordinator, wb_discharge_bat_until_description, entry.unique_id))
 
