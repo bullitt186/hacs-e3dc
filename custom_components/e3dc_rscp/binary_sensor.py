@@ -130,16 +130,6 @@ async def async_setup_entry(
         )
         entities.append(E3DCBinarySensor(coordinator, wallbox_charging_canceled_description, unique_id, wallbox["deviceInfo"]))
 
-        wallbox_battery_to_car_description = E3DCBinarySensorEntityDescription(
-            key=f"{wallbox_key}-battery-to-car",
-            translation_key="wallbox-battery-to-car",
-            on_icon="mdi:battery-charging",
-            off_icon="mdi:battery-off",
-            device_class=None,
-            entity_registry_enabled_default=False,
-        )
-        entities.append(E3DCBinarySensor(coordinator, wallbox_battery_to_car_description, unique_id, wallbox["deviceInfo"]))
-
         wallbox_key_state_description = E3DCBinarySensorEntityDescription(
             key=f"{wallbox_key}-key-state",
             translation_key="wallbox-key-state",
@@ -149,6 +139,39 @@ async def async_setup_entry(
             entity_registry_enabled_default=False,
         )
         entities.append(E3DCBinarySensor(coordinator, wallbox_key_state_description, unique_id, wallbox["deviceInfo"]))
+
+    if len(coordinator.wallboxes) > 0:
+        battery_to_car_mode_description = E3DCBinarySensorEntityDescription(
+            key="battery-to-car-mode",
+            translation_key="battery-to-car-mode",
+            on_icon="mdi:battery",
+            off_icon="mdi:battery-off",
+            device_class=None,
+            entity_registry_enabled_default=True,
+        )
+        entities.append(E3DCBinarySensor(coordinator, battery_to_car_mode_description, entry.unique_id))
+
+        battery_before_car_mode_description = E3DCBinarySensorEntityDescription(
+            key="battery-before-car-mode",
+            translation_key="battery-before-car-mode",
+            on_icon="mdi:battery",
+            off_icon="mdi:car",
+            device_class=None,
+            entity_registry_enabled_default=True,
+        )
+        entities.append(E3DCBinarySensor(coordinator, battery_before_car_mode_description, entry.unique_id))
+
+        wallbox_enforce_power_assignment_description = E3DCBinarySensorEntityDescription(
+            key="wallbox-enforce-power-assignment",
+            translation_key="wallbox-enforce-power-assignment",
+            on_icon="mdi:battery-off",
+            off_icon="mdi:battery",
+            device_class=None,
+            entity_registry_enabled_default=True,
+        )
+        entities.append(E3DCBinarySensor(coordinator, wallbox_enforce_power_assignment_description, entry.unique_id))
+
+
 
     async_add_entities(entities)
 

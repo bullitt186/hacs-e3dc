@@ -532,6 +532,20 @@ async def async_setup_entry(
         )
         entities.append(E3DCSensor(coordinator, wallbox_soc_description, unique_id, wallbox["deviceInfo"]))
 
+    # Add charging prioritization sensors but only if at least one wallbox is installed
+    if len(coordinator.wallboxes) > 0:
+        wb_discharge_bat_until_description = SensorEntityDescription(
+            key="wb-discharge-bat-until",
+            translation_key="wb-discharge-bat-until",
+            icon="mdi:battery-charging",
+            native_unit_of_measurement=PERCENTAGE,
+            suggested_display_precision=0,
+            device_class=SensorDeviceClass.BATTERY,
+            state_class=SensorStateClass.MEASUREMENT,
+        )
+        entities.append(E3DCSensor(coordinator, wb_discharge_bat_until_description, entry.unique_id))
+
+
 
     async_add_entities(entities)
 

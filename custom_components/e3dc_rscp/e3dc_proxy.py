@@ -215,6 +215,53 @@ class E3DCProxy:
 
         return outObj
 
+    @e3dc_call
+    def get_charging_prioritization_data(self) -> dict[str, Any]:
+        """Retrieve charging prioritization relevant data."""
+
+        outObj: dict[str, Any] = {}
+
+        req = self.e3dc.sendRequest(
+            ("EMS_REQ_BATTERY_BEFORE_CAR_MODE", "None", None),
+            keepAlive=True
+        )
+        battery_before_car_mode = rscpFindTag(req, "EMS_BATTERY_BEFORE_CAR_MODE")
+        if battery_before_car_mode is not None:
+            # 1 = Battery first
+            # 0 = Wallbox first
+            outObj["battery-before-car-mode"] = rscpFindTagIndex(battery_before_car_mode, "EMS_BATTERY_BEFORE_CAR_MODE")
+
+        req = self.e3dc.sendRequest(
+            ("EMS_REQ_BATTERY_TO_CAR_MODE", "None", None),
+            keepAlive=True
+        )
+        battery_to_car_mode = rscpFindTag(req, "EMS_BATTERY_TO_CAR_MODE")
+        if battery_to_car_mode is not None:
+            # 1 = Allow discharge battery by wallbox in sun mode.
+            # 0 = Do not allow discharge battery by wallbox in sun mode.
+            outObj["battery-to-car-mode"] = rscpFindTagIndex(battery_to_car_mode, "EMS_BATTERY_TO_CAR_MODE")
+
+        req = self.e3dc.sendRequest(
+            ("EMS_REQ_GET_WB_DISCHARGE_BAT_UNTIL", "None", None),
+            keepAlive=True
+        )
+        wb_discharge_bat_until = rscpFindTag(req, "EMS_GET_WB_DISCHARGE_BAT_UNTIL")
+        if wb_discharge_bat_until is not None:
+            # value = Allow discharge battery by wallbox in sun mode down to <value>%.
+            outObj["wb-discharge-bat-until"] = rscpFindTagIndex(wb_discharge_bat_until, "EMS_GET_WB_DISCHARGE_BAT_UNTIL")
+
+        req = self.e3dc.sendRequest(
+            ("EMS_REQ_GET_WALLBOX_ENFORCE_POWER_ASSIGNMENT", "None", None),
+            keepAlive=True
+        )
+        wallbox_enforce_power_assignment = rscpFindTag(req, "EMS_GET_WALLBOX_ENFORCE_POWER_ASSIGNMENT")
+        if wallbox_enforce_power_assignment is not None:
+            # True = Prevent battery discharge through wallbox in mixing mode.
+            # False = Allow battery discharge through wallbox in mixing mode.
+            outObj["wallbox-enforce-power-assignment"] = not rscpFindTagIndex(wallbox_enforce_power_assignment, "EMS_GET_WALLBOX_ENFORCE_POWER_ASSIGNMENT")
+
+        return outObj
+
 
     @e3dc_call
     def get_powermeters_data(self) -> dict[str, Any]:

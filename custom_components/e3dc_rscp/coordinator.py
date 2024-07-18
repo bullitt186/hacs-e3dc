@@ -245,6 +245,9 @@ class E3DCCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             _LOGGER.debug("Polling wallbox")
             await self._load_and_process_wallbox_data()
 
+            _LOGGER.debug("Polling charging prioritization")
+            await self._load_and_process_charging_prioritization_data()
+
         # Only poll power statstics once per minute. E3DC updates it only once per 15
         # minutes anyway, this should be a good compromise to get the metrics shortly
         # before the end of the day.
@@ -339,6 +342,17 @@ class E3DCCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             request_data: dict[str, Any] = await self.hass.async_add_executor_job(self.proxy.get_powermeters_data)
         except HomeAssistantError as ex:
             _LOGGER.warning("Failed to load powermeters, not updating data: %s", ex)
+            return
+
+        for key, value in request_data.items():
+            self._mydata[key] = value
+
+    async def _load_and_process_charging_prioritization_data(self) -> None:
+        """Load and process the parameters for charging prioritization (only relevant if a wallbox installed)."""
+        try:
+            request_data: dict[str, Any] = await self.hass.async_add_executor_job(self.proxy.get_charging_prioritization_data)
+        except HomeAssistantError as ex:
+            _LOGGER.warning("Failed to load charging prioritization data, not updating data: %s", ex)
             return
 
         for key, value in request_data.items():

@@ -39,8 +39,8 @@
       "manual-charge-active": {
         "name": "Manual charge"
       },
-      "wallbox-battery-to-car": {
-        "name": "Battery to car"
+      "battery-to-car-mode": {
+        "name": "Battery discharge to car"
       },
       "wallbox-charging": {
         "name": "Charging"
@@ -62,6 +62,12 @@
       },
       "wallbox-key-state": {
         "name": "Key state"
+      },
+      "battery-before-car-mode": {
+        "name": "Charge battery before car"
+      },
+      "wallbox-enforce-power-assignment": {
+        "name": "Battery discharge In mixed mode"
       }
     },
     "sensor": {
@@ -247,6 +253,9 @@
       },
       "wallbox-soc": {
         "name": "State of charge"
+      },
+      "wb-discharge-bat-until": {
+        "name": "Wallbox discharge battery until"
       }
     },
     "switch": {
