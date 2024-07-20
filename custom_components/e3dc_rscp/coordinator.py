@@ -48,8 +48,7 @@ class E3DCCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self._sw_version: str = ""
         self._update_guard_powersettings: bool = False
         self._update_guard_wallboxsettings: bool = False
-        self._update_guard_charging_prioritizationsettings: bool = False
-        self._wallboxes: list[dict[str, str | int]] = []
+        self._wallboxes: list[E3DCWallbox] = []
         self._timezone_offset: int = 0
         self._next_stat_update: float = 0
 
