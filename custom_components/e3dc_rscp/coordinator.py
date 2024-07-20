@@ -3,7 +3,7 @@
 from datetime import timedelta, datetime
 import logging
 from time import time
-from typing import Any
+from typing import Any, TypedDict
 import pytz
 import re
 
@@ -25,6 +25,14 @@ from .e3dc_proxy import E3DCProxy
 _LOGGER = logging.getLogger(__name__)
 _STAT_REFRESH_INTERVAL = 60
 
+
+
+class E3DCWallbox(TypedDict):
+    index: int
+    key: str
+    deviceInfo: DeviceInfo
+    lowerCurrentLimit: int
+    upperCurrentLimit: int
 
 class E3DCCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     """E3DC Coordinator, fetches all relevant data and provides proxies for all service calls."""
@@ -116,7 +124,7 @@ class E3DCCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                     configuration_url="https://my.e3dc.com/",
                 )
 
-                wallbox = {
+                wallbox: E3DCWallbox = {
                     "index": wallbox_index,
                     "key": unique_id,
                     "deviceInfo": deviceInfo,
@@ -129,15 +137,9 @@ class E3DCCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
     # Getter for _wallboxes
     @property
-    def wallboxes(self) -> list[dict[str, str | int]]:
+    def wallboxes(self) -> list[E3DCWallbox]:
         """Get the list of wallboxes."""
         return self._wallboxes
-
-    # Setter for _wallboxes
-    @wallboxes.setter
-    def wallboxes(self, value: list[dict[str, str | int]]) -> None:
-        """Set the list of wallboxes."""
-        self._wallboxes = value
 
     # Setter for individual wallbox values
     def setWallboxValue(self, index: int, key: str, value: Any) -> None:
