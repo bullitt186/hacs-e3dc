@@ -4,6 +4,7 @@ from collections.abc import Callable, Coroutine
 from dataclasses import dataclass
 import logging
 from typing import Any, Final
+from typing import Any, Final
 
 from homeassistant.components.number import (
     NumberDeviceClass,
