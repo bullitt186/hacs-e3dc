@@ -270,6 +270,15 @@
             },
             "wallbox-schuko": {
                 "name": "Schuko"
+            },
+            "battery-before-car-mode": {
+                "name": "Charge battery before car"
+            },
+            "battery-to-car-mode": {
+                "name": "Discharge battery to car in sun mode"
+            },
+            "wallbox-enforce-power-assignment": {
+                "name": "Discharge battery to car in mixed mode"
             }
         },
         "button": {
@@ -285,7 +294,7 @@
                 "name": "Max charge current"
             },
             "wb-discharge-bat-until": {
-                "name": "Wallbox discharge battery until"
+                "name": "Discharge battery to car until"
             }
         }
     },

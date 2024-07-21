@@ -477,6 +477,39 @@ class E3DCCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         _LOGGER.debug("Updated powersaving to %s", enabled)
         return True
 
+    async def async_set_charge_battery_before_car_mode(self, enabled: bool) -> None:
+        """Sets the charging priority whether to charge battery or car first."""
+        _LOGGER.debug("Set charge battery before car mode to %s", enabled)
+        try:
+            self._update_guard_charging_prioritizationsettings = True
+            await self.hass.async_add_executor_job(self.proxy.set_charge_battery_before_car_mode, enabled)
+            self._mydata["battery-before-car-mode"] = enabled
+        finally:
+            self._update_guard_charging_prioritizationsettings = False
+        _LOGGER.debug("Charge battery before car mode to %s set", enabled)
+
+    async def async_set_battery_to_car_mode(self, enabled: bool) -> None:
+        """Allows that the car can be charged via battery power."""
+        _LOGGER.debug("Set battery to car mode to %s", enabled)
+        try:
+            self._update_guard_charging_prioritizationsettings = True
+            await self.hass.async_add_executor_job(self.proxy.set_battery_to_car_mode, enabled)
+            self._mydata["battery-to-car-mode"] = enabled
+        finally:
+            self._update_guard_charging_prioritizationsettings = False
+        _LOGGER.debug("Battery to car mode to %s set", enabled)
+
+    async def async_set_battery_discharge_by_wallbox_in_mixed_mode(self, enabled: bool) -> None:
+        """Sets whether the car can be charged via battery power in mixed mode."""
+        _LOGGER.debug("Set battery discharge by wallbox in mixed mode to %s", enabled)
+        try:
+            self._update_guard_charging_prioritizationsettings = True
+            await self.hass.async_add_executor_job(self.proxy.set_battery_discharge_by_wallbox_in_mixed_mode, enabled)
+            self._mydata["wallbox-enforce-power-assignment"] = enabled
+        finally:
+            self._update_guard_charging_prioritizationsettings = False
+        _LOGGER.debug("Battery discharge by wallbox in mixed mode to %s set", enabled)
+
     async def async_set_wallbox_discharge_battery_until(self, dischargeUntil: int) -> None:
         """Allows wallbox to discharge the battery until given value."""
         _LOGGER.debug("Set wallbox discharge battery until %s", dischargeUntil)
@@ -487,8 +520,6 @@ class E3DCCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         finally:
             self._update_guard_charging_prioritizationsettings = False
         _LOGGER.debug("Wallbox discharge battery until %s set", dischargeUntil)
-
-
 
     async def async_set_wallbox_sun_mode(self, enabled: bool, wallbox_index: int) -> bool:
         """Enable or disable wallbox sun mode."""

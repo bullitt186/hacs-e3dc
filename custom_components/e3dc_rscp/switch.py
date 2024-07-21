@@ -120,6 +120,59 @@ async def async_setup_entry(
         )
         entities.append(E3DCSwitch(coordinator, wallbox_schuko_description, unique_id, wallbox["deviceInfo"]))
 
+    # Add charging prioritization switches but only if at least one wallbox is installed
+    if len(coordinator.wallboxes) > 0:
+        charge_battery_before_car_mode_description = E3DCSwitchEntityDescription(
+            key="battery-before-car-mode",
+            translation_key="battery-before-car-mode",
+            name="Charge battery before car",
+            on_icon="mdi:battery-charging",
+            off_icon="mdi:car-electric",
+            device_class=SwitchDeviceClass.SWITCH,
+            entity_category=EntityCategory.CONFIG,
+            async_turn_on_action=lambda coordinator: coordinator.async_set_charge_battery_before_car_mode(
+                True
+            ),
+            async_turn_off_action=lambda coordinator: coordinator.async_set_charge_battery_before_car_mode(
+                False
+            ),
+        )
+        entities.append(E3DCSwitch(coordinator, charge_battery_before_car_mode_description, entry.unique_id))
+
+        battery_to_car_mode_description = E3DCSwitchEntityDescription(
+            key="battery-to-car-mode",
+            translation_key="battery-to-car-mode",
+            name="Discharge battery to car in sun mode",
+            on_icon="mdi:ev-station",
+            off_icon="mdi:battery-remove",
+            device_class=SwitchDeviceClass.SWITCH,
+            entity_category=EntityCategory.CONFIG,
+            async_turn_on_action=lambda coordinator: coordinator.async_set_battery_to_car_mode(
+                True
+            ),
+            async_turn_off_action=lambda coordinator: coordinator.async_set_battery_to_car_mode(
+                False
+            ),
+        )
+        entities.append(E3DCSwitch(coordinator, battery_to_car_mode_description, entry.unique_id))
+
+        set_battery_discharge_by_wallbox_in_mixed_mode_description = E3DCSwitchEntityDescription(
+            key="wallbox-enforce-power-assignment",
+            translation_key="wallbox-enforce-power-assignment",
+            name="Discharge battery to car in mixed mode",
+            on_icon="mdi:ev-station",
+            off_icon="mdi:battery-remove",
+            device_class=SwitchDeviceClass.SWITCH,
+            entity_category=EntityCategory.CONFIG,
+            async_turn_on_action=lambda coordinator: coordinator.async_set_battery_discharge_by_wallbox_in_mixed_mode(
+                True
+            ),
+            async_turn_off_action=lambda coordinator: coordinator.async_set_battery_discharge_by_wallbox_in_mixed_mode(
+                False
+            ),
+        )
+        entities.append(E3DCSwitch(coordinator, set_battery_discharge_by_wallbox_in_mixed_mode_description, entry.unique_id))
+
     async_add_entities(entities)
 
 

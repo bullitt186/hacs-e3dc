@@ -31,35 +31,13 @@ class E3DCNumberEntityDescription(NumberEntityDescription):
         [E3DCCoordinator, float, int], Coroutine[Any, Any, bool]
     ] | None = None
 
-
-NUMBERS: Final[tuple[E3DCNumberEntityDescription, ...]] = (
-    # CONFIG AND DIAGNOSTIC NUMBERS
-    E3DCNumberEntityDescription(
-        key="wb-discharge-bat-until",
-        translation_key="wb-discharge-bat-until",
-        name="Wallbox discharge battery until",
-        icon="mdi:battery-arrow-down",
-        native_min_value=0,
-        native_max_value=100,
-        native_step=1,
-        device_class=NumberDeviceClass.BATTERY,
-        entity_category=EntityCategory.CONFIG,
-        native_unit_of_measurement="%",
-        async_set_native_value_action=lambda coordinator, value: coordinator.async_set_wallbox_discharge_battery_until(int(value)),
-    ),
-    # REGULAR NUMBERS (None yet)
-)
-
 async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
     """Initialize Number Platform."""
     assert isinstance(entry.unique_id, str)
     coordinator: E3DCCoordinator = hass.data[DOMAIN][entry.unique_id]
-    entities: list[E3DCNumber] = [
-        E3DCNumber(coordinator, description, entry.unique_id)
-        for description in NUMBERS
-    ]
+    entities: list[E3DCNumber] = []
 
     # Add Number descriptions for wallboxes
     for wallbox in coordinator.wallboxes:
@@ -80,6 +58,23 @@ async def async_setup_entry(
             async_set_native_value_action=lambda coordinator, value, index=wallbox["index"]: coordinator.async_set_wallbox_max_charge_current(int(value), index),
         )
         entities.append(E3DCNumber(coordinator, wallbox_charge_current_limit_description, unique_id, wallbox["deviceInfo"]))
+
+    # Add charging prioritization switches but only if at least one wallbox is installed
+    if len(coordinator.wallboxes) > 0:
+        set_wallbox_discharge_battery_until_description = E3DCNumberEntityDescription(
+            key="wb-discharge-bat-until",
+            translation_key="wb-discharge-bat-until",
+            name="Discharge battery to car until",
+            icon="mdi:battery-arrow-down",
+            native_min_value=0,
+            native_max_value=100,
+            native_step=1,
+            device_class=NumberDeviceClass.BATTERY,
+            entity_category=EntityCategory.CONFIG,
+            native_unit_of_measurement="%",
+            async_set_native_value_action=lambda coordinator, value: coordinator.async_set_wallbox_discharge_battery_until(int(value)),
+        )
+        entities.append(E3DCNumber(coordinator, set_wallbox_discharge_battery_until_description, entry.unique_id))
 
     async_add_entities(entities)
 

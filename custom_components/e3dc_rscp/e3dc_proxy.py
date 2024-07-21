@@ -256,8 +256,8 @@ class E3DCProxy:
         )
         wallbox_enforce_power_assignment = rscpFindTag(req, "EMS_GET_WALLBOX_ENFORCE_POWER_ASSIGNMENT")
         if wallbox_enforce_power_assignment is not None:
-            # True = Prevent battery discharge through wallbox in mixing mode.
-            # False = Allow battery discharge through wallbox in mixing mode.
+            # True = Prevent battery discharge through wallbox in mixed mode.
+            # False = Allow battery discharge through wallbox in mixed mode.
             outObj["wallbox-enforce-power-assignment"] = not rscpFindTagIndex(wallbox_enforce_power_assignment, "EMS_GET_WALLBOX_ENFORCE_POWER_ASSIGNMENT")
 
         return outObj
@@ -333,6 +333,60 @@ class E3DCProxy:
 
         if not result:
             _LOGGER.warning("Manual charging could not be activated")
+
+    @e3dc_call
+    def set_charge_battery_before_car_mode(self, enabled: bool) -> None:
+        """Sets the charging priority whether to charge battery or car first.
+
+        Args:
+            enabled(bool): true = battery is charged first, false = car is charged first.
+
+        Returns:
+            nothing
+
+        """
+        result = self.e3dc.sendRequest(
+            (RscpTag.EMS_REQ_SET_BATTERY_BEFORE_CAR_MODE, RscpType.UChar8, int(enabled)),
+            keepAlive=True
+        )
+        if not result:
+            raise HomeAssistantError("Failed to set charge battery before car to %s", enabled)
+
+    @e3dc_call
+    def set_battery_to_car_mode(self, enabled: bool) -> None:
+        """Allows that the car can be charged via battery power.
+
+        Args:
+            enabled(bool): true = car can be charged via battery, false = car charging via battery is disabled.
+
+        Returns:
+            nothing
+
+        """
+        result = self.e3dc.sendRequest(
+            (RscpTag.EMS_REQ_SET_BATTERY_TO_CAR_MODE, RscpType.UChar8, int(enabled)),
+            keepAlive=True
+        )
+        if not result:
+            raise HomeAssistantError("Failed to set battery to car to %s", enabled)
+
+    @e3dc_call
+    def set_battery_discharge_by_wallbox_in_mixed_mode(self, enabled: bool) -> None:
+        """Sets whether the car can be charged via battery power in mixed mode.
+
+        Args:
+            enabled(bool): true = Prevent battery discharge by wallbox in mixed mode, false = Allow battery discharge by wallbox in mixed mode.
+
+        Returns:
+            nothing
+
+        """
+        result = self.e3dc.sendRequest(
+            (RscpTag.EMS_REQ_SET_WALLBOX_ENFORCE_POWER_ASSIGNMENT, RscpType.UChar8, int(enabled)),
+            keepAlive=True
+        )
+        if not result:
+            raise HomeAssistantError("Failed to set battery discharge by wallbox in mixed mode to %s", enabled)
 
     @e3dc_call
     def set_wallbox_discharge_battery_until(self, dischargeUntil: int) -> None:
