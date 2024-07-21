@@ -283,6 +283,9 @@
         "number": {
             "wallbox-max-charge-current": {
                 "name": "Max charge current"
+            },
+            "wb-discharge-bat-until": {
+                "name": "Wallbox discharge battery until"
             }
         }
     },

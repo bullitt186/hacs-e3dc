@@ -335,6 +335,27 @@ class E3DCProxy:
             _LOGGER.warning("Manual charging could not be activated")
 
     @e3dc_call
+    def set_wallbox_discharge_battery_until(self, dischargeUntil: int) -> None:
+        """Sets the charging level until the wallbox can discharge the battery.
+
+        Args:
+            dischargeUntil(int): the charging level in % to which the battery can be dischargdx
+
+        Returns:
+            nothing
+
+        """
+        result = self.e3dc.sendRequest(
+            (RscpTag.EMS_REQ_SET_WB_DISCHARGE_BAT_UNTIL, RscpType.UChar8, dischargeUntil),
+            keepAlive=True
+        )
+        if not result:
+            raise HomeAssistantError("Failed to set wallbox discharge battery until %s", dischargeUntil)
+
+
+
+
+    @e3dc_call
     def set_wallbox_sun_mode(self, enabled: bool, wallbox_index: int):
         """Set wallbox charging mode to sun mode on/off.
 

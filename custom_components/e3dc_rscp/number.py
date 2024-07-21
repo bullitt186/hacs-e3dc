@@ -3,7 +3,7 @@
 from collections.abc import Callable, Coroutine
 from dataclasses import dataclass
 import logging
-from typing import Any
+from typing import Any, Final
 
 from homeassistant.components.number import (
     NumberDeviceClass,
@@ -32,13 +32,34 @@ class E3DCNumberEntityDescription(NumberEntityDescription):
     ] | None = None
 
 
+NUMBERS: Final[tuple[E3DCNumberEntityDescription, ...]] = (
+    # CONFIG AND DIAGNOSTIC NUMBERS
+    E3DCNumberEntityDescription(
+        key="wb-discharge-bat-until",
+        translation_key="wb-discharge-bat-until",
+        name="Wallbox discharge battery until",
+        icon="mdi:battery-arrow-down",
+        native_min_value=0,
+        native_max_value=100,
+        native_step=1,
+        device_class=NumberDeviceClass.BATTERY,
+        entity_category=EntityCategory.CONFIG,
+        native_unit_of_measurement="%",
+        async_set_native_value_action=lambda coordinator, value: coordinator.async_set_wallbox_discharge_battery_until(int(value)),
+    ),
+    # REGULAR NUMBERS (None yet)
+)
+
 async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
     """Initialize Number Platform."""
     assert isinstance(entry.unique_id, str)
     coordinator: E3DCCoordinator = hass.data[DOMAIN][entry.unique_id]
-    entities: list[E3DCNumber] = []
+    entities: list[E3DCNumber] = [
+        E3DCNumber(coordinator, description, entry.unique_id)
+        for description in NUMBERS
+    ]
 
     # Add Number descriptions for wallboxes
     for wallbox in coordinator.wallboxes:

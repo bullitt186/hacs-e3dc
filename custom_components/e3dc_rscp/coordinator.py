@@ -38,6 +38,7 @@ class E3DCCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self._sw_version: str = ""
         self._update_guard_powersettings: bool = False
         self._update_guard_wallboxsettings: bool = False
+        self._update_guard_charging_prioritizationsettings: bool = False
         self._wallboxes: list[dict[str, str | int]] = []
         self._timezone_offset: int = 0
         self._next_stat_update: float = 0
@@ -475,6 +476,19 @@ class E3DCCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
         _LOGGER.debug("Updated powersaving to %s", enabled)
         return True
+
+    async def async_set_wallbox_discharge_battery_until(self, dischargeUntil: int) -> None:
+        """Allows wallbox to discharge the battery until given value."""
+        _LOGGER.debug("Set wallbox discharge battery until %s", dischargeUntil)
+        try:
+            self._update_guard_charging_prioritizationsettings = True
+            await self.hass.async_add_executor_job(self.proxy.set_wallbox_discharge_battery_until, dischargeUntil)
+            self._mydata["wb-discharge-bat-until"] = dischargeUntil
+        finally:
+            self._update_guard_charging_prioritizationsettings = False
+        _LOGGER.debug("Wallbox discharge battery until %s set", dischargeUntil)
+
+
 
     async def async_set_wallbox_sun_mode(self, enabled: bool, wallbox_index: int) -> bool:
         """Enable or disable wallbox sun mode."""
