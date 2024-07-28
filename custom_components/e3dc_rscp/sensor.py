@@ -185,17 +185,6 @@ SENSOR_DESCRIPTIONS: Final[tuple[SensorEntityDescription, ...]] = (
         state_class=SensorStateClass.MEASUREMENT,
     ),
     SensorEntityDescription(
-        key="wallbox-consumption",
-        translation_key="wallbox-consumption",
-        icon="mdi:ev-station",
-        native_unit_of_measurement=UnitOfPower.WATT,
-        suggested_unit_of_measurement=UnitOfPower.KILO_WATT,
-        suggested_display_precision=2,
-        device_class=SensorDeviceClass.POWER,
-        state_class=SensorStateClass.MEASUREMENT,
-        entity_registry_enabled_default=False,
-    ),
-    SensorEntityDescription(
         key="grid-netchange",
         translation_key="grid-netchange",
         icon="mdi:battery-charging",
@@ -532,7 +521,7 @@ async def async_setup_entry(
         )
         entities.append(E3DCSensor(coordinator, wallbox_soc_description, unique_id, wallbox["deviceInfo"]))
 
-    # Add charging prioritization sensors but only if at least one wallbox is installed
+    # Add wallbox sensors to Hauskraftwerk but only if at least one wallbox is installed
     if len(coordinator.wallboxes) > 0:
         wb_discharge_bat_until_description = SensorEntityDescription(
             key="wb-discharge-bat-until",
@@ -546,6 +535,17 @@ async def async_setup_entry(
         )
         entities.append(E3DCSensor(coordinator, wb_discharge_bat_until_description, entry.unique_id))
 
+        wallbox_consumption_description = SensorEntityDescription(
+            key="wallbox-consumption",
+            translation_key="wallbox-consumption",
+            icon="mdi:ev-station",
+            native_unit_of_measurement=UnitOfPower.WATT,
+            suggested_unit_of_measurement=UnitOfPower.KILO_WATT,
+            suggested_display_precision=2,
+            device_class=SensorDeviceClass.POWER,
+            state_class=SensorStateClass.MEASUREMENT,
+        )
+        entities.append(E3DCSensor(coordinator, wallbox_consumption_description, entry.unique_id))
 
 
     async_add_entities(entities)
