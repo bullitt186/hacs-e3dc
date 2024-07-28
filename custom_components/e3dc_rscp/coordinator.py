@@ -25,6 +25,14 @@ from .e3dc_proxy import E3DCProxy
 _LOGGER = logging.getLogger(__name__)
 _STAT_REFRESH_INTERVAL = 60
 
+class E3DCWallbox(TypedDict):
+    """E3DC Wallbox, keeps general information, attributes and identity data for an individual wallbox"""
+
+    index: int
+    key: str
+    deviceInfo: DeviceInfo
+    lowerCurrentLimit: int
+    upperCurrentLimit: int
 
 class E3DCCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     """E3DC Coordinator, fetches all relevant data and provides proxies for all service calls."""

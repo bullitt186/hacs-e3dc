@@ -38,10 +38,7 @@ async def async_setup_entry(
     """Initialize Number Platform."""
     assert isinstance(entry.unique_id, str)
     coordinator: E3DCCoordinator = hass.data[DOMAIN][entry.unique_id]
-    entities: list[E3DCNumber] = [
-        E3DCNumber(coordinator, description, entry.unique_id)
-        for description in NUMBERS
-    ]
+    entities: list[E3DCNumber] = []
 
     # Add Number descriptions for wallboxes
     for wallbox in coordinator.wallboxes:
